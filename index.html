@@ -30,6 +30,7 @@
     <!-- Custom Styles for Font, Scroll Reveal, and Hero Background -->
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        header { border-bottom: 2px solid rgba(255,255,255,0.06); }
         
         /* Animation Classes */
         .reveal {
@@ -56,7 +57,7 @@
         /* Hero Background and Overlay - use an <img> for faster, responsive loading */
         .hero-bg {
             position: relative;
-            min-height: 420px;
+            min-height: 520px;
             overflow: hidden;
             background-color: #14183E; /* fallback color while image loads */
         }
@@ -70,13 +71,15 @@
         }
         /* Blur-up LQIP effect */
         .hero-media.blur-up {
-            filter: blur(16px);
-            transform: scale(1.03);
-            transition: filter 700ms ease, transform 700ms ease;
+            filter: blur(8px) saturate(0.98);
+            transform: scale(1.02);
+            transition: filter 320ms ease, transform 320ms ease;
+            will-change: filter, transform;
         }
         .hero-media.loaded {
-            filter: blur(0);
+            filter: blur(0) saturate(1);
             transform: scale(1);
+            transition: filter 220ms ease, transform 220ms ease;
         }
         /* Overlay to darken image and make the white text pop */
         .hero-bg::before {
@@ -155,23 +158,23 @@
     <!-- 2. Hero Section (Image Background & Main CTA) -->
     <section class="relative text-white py-20 sm:py-32 shadow-xl hero-bg">
         <!-- Hero image (uses responsive srcset for faster loads) -->
-        <img id="hero-img" class="hero-media" src="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80" 
+        <img id="hero-img" class="hero-media blur-up" src="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80" 
              srcset="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=640&q=60 640w, https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80 1200w, https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=2000&q=80 2000w"
              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
-             alt="Featured car" loading="eager">
+             alt="Featured car" loading="eager" fetchpriority="high">
 
         <!-- Overlay to darken image -->
-        <div class="absolute inset-0" style="background: rgba(20,24,62,0.55); z-index: 10;"></div>
+        <div class="absolute inset-0" style="background: rgba(20,24,62,0.45); z-index: 10;"></div>
 
         <!-- hero-content ensures text is above the image overlay -->
         <div class="relative z-20 max-w-7xl mx-auto px-4 text-center hero-content"> 
-            <h1 class="text-4xl sm:text-6xl font-extrabold mb-4 reveal">
+            <h1 class="text-4xl sm:text-6xl font-extrabold mb-4">
                 Drive Your Dream — Find the Perfect Make & Model
             </h1>
-            <p class="text-lg sm:text-xl mb-8 font-medium reveal delay-100">
+            <p class="text-lg sm:text-xl mb-8 font-medium">
                 Browse hand-picked cars, flexible financing, and luxury hires across Kenya.
             </p>
-            <div class="space-x-4 reveal delay-200">
+            <div class="space-x-4">
                 <a href="#inventory" class="bg-white text-gray-900 px-8 py-3 rounded-full font-semibold shadow-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105 inline-block">
                     Browse Inventory
                 </a>
@@ -352,11 +355,11 @@
         // LQIP: set hero image with a blurred low-res placeholder, then swap to high-res
         function buildLowRes(url){
             try{
-                // replace or append width and quality params for a tiny blurred version
+                // produce a slightly higher-quality small image to avoid excessive blur
                 let low = url;
-                if(/w=\d+/.test(low)) low = low.replace(/w=\d+/, 'w=60'); else low += '&w=60';
-                if(/q=\d+/.test(low)) low = low.replace(/q=\d+/, 'q=10'); else low += '&q=10';
-                if(!/blur=\d+/.test(low)) low += '&blur=50';
+                if(/w=\d+/.test(low)) low = low.replace(/w=\d+/, 'w=240'); else low += '&w=240';
+                if(/q=\d+/.test(low)) low = low.replace(/q=\d+/, 'q=30'); else low += '&q=30';
+                if(!/blur=\d+/.test(low)) low += '&blur=8';
                 return low;
             }catch(e){ return url; }
         }
@@ -406,7 +409,7 @@
             const grid = document.getElementById('inventory-grid');
             grid.innerHTML = carData.map((car, idx) => `
                 <div class="card-gradient rounded-xl shadow-xl overflow-hidden reveal delay-${(idx%5+1)*100}">
-                    <img src="${car.image}" alt="${car.name}" class="w-full h-48 object-cover" loading="lazy" decoding="async">
+                    <img src="${car.image}" alt="${car.name}" class="w-full h-48 object-cover">
                     <div class="p-6">
                         <h3 class="text-2xl font-bold text-gray-900 mb-1">${car.name}</h3>
                         <p class="text-sm text-gray-500 mb-2">Location: <strong class="text-gray-700">${car.location}</strong></p>
@@ -531,6 +534,9 @@
             attachShareHandlers();
             // Show a quick LQIP hero using the first known car image to ensure hero appears fast
             if(window.carImages && carImages.length) setHeroImageWithLQIP(carImages[0]);
+            // Ensure hero content is visible immediately
+            const heroContent = document.querySelector('.hero-content');
+            if(heroContent) heroContent.classList.add('is-visible');
             // Defer inventory rendering slightly to improve perceived load
             window.setTimeout(() => {
                 renderInventory();
