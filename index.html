@@ -19,6 +19,13 @@
     <meta property="og:title" content="VOBAHub Auto Solutions Ltd: Drive Your Dream">
     <meta property="og:description" content="Professional Car Sales, Financing & Premium Hire Services in Nairobi.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1549397621-e7300c02931d?auto=format&fit=crop&w=1200&h=630&q=80">
+    <!-- Resource hints for faster image loading -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80">
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1543881477-980753443a91?auto=format&fit=crop&w=1200&q=80">
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1594958156170-87747e937d25?auto=format&fit=crop&w=1200&q=80">
+    <link rel="prefetch" href="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80">
+    <link rel="prefetch" href="https://images.unsplash.com/photo-1549397621-e7300c02931d?auto=format&fit=crop&w=1200&q=80">
     
     <!-- Custom Styles for Font, Scroll Reveal, and Hero Background -->
     <style>
@@ -46,15 +53,30 @@
             background: linear-gradient(135deg, #ffffff 0%, #f1f1f9 100%);
         }
 
-        /* Hero Background and Overlay */
+        /* Hero Background and Overlay - use an <img> for faster, responsive loading */
         .hero-bg {
-            /* High-quality dark car image for the background */
-            background-image: url('https://images.unsplash.com/photo-1549397621-e7300c02931d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); 
-            background-size: cover;
-            background-position: center;
             position: relative;
-            /* Ensure text contrast on small screens if image fails */
-            background-color: #14183E;
+            min-height: 420px;
+            overflow: hidden;
+            background-color: #14183E; /* fallback color while image loads */
+        }
+        .hero-bg img.hero-media {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        /* Blur-up LQIP effect */
+        .hero-media.blur-up {
+            filter: blur(16px);
+            transform: scale(1.03);
+            transition: filter 700ms ease, transform 700ms ease;
+        }
+        .hero-media.loaded {
+            filter: blur(0);
+            transform: scale(1);
         }
         /* Overlay to darken image and make the white text pop */
         .hero-bg::before {
@@ -131,22 +153,30 @@
     </header>
 
     <!-- 2. Hero Section (Image Background & Main CTA) -->
-    <!-- Added hero-bg class for the background image and overlay -->
-    <section class="relative text-white py-20 sm:py-32 overflow-hidden shadow-xl hero-bg">
+    <section class="relative text-white py-20 sm:py-32 shadow-xl hero-bg">
+        <!-- Hero image (uses responsive srcset for faster loads) -->
+        <img id="hero-img" class="hero-media" src="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80" 
+             srcset="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=640&q=60 640w, https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80 1200w, https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=2000&q=80 2000w"
+             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+             alt="Featured car" loading="eager">
+
+        <!-- Overlay to darken image -->
+        <div class="absolute inset-0" style="background: rgba(20,24,62,0.55); z-index: 10;"></div>
+
         <!-- hero-content ensures text is above the image overlay -->
-        <div class="max-w-7xl mx-auto px-4 text-center hero-content"> 
+        <div class="relative z-20 max-w-7xl mx-auto px-4 text-center hero-content"> 
             <h1 class="text-4xl sm:text-6xl font-extrabold mb-4 reveal">
-                Your Road Starts Here.
+                Drive Your Dream — Find the Perfect Make & Model
             </h1>
-            <p class="text-xl sm:text-2xl mb-8 font-light reveal delay-100">
-                DRIVE YOUR DREAM! Professional Car Sales, Loans, and Premium Hire Services.
+            <p class="text-lg sm:text-xl mb-8 font-medium reveal delay-100">
+                Browse hand-picked cars, flexible financing, and luxury hires across Kenya.
             </p>
             <div class="space-x-4 reveal delay-200">
-                <a href="#sales" class="bg-white text-gray-900 px-8 py-3 rounded-full font-semibold shadow-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105 inline-block">
-                    Explore Cars for Sale
+                <a href="#inventory" class="bg-white text-gray-900 px-8 py-3 rounded-full font-semibold shadow-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105 inline-block">
+                    Browse Inventory
                 </a>
-                <a href="#hire" class="border-2 border-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:bg-opacity-10 transition duration-300 inline-block mt-4 sm:mt-0">
-                    Book a Car Hire
+                <a href="#sales" class="border-2 border-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:bg-opacity-10 transition duration-300 inline-block mt-4 sm:mt-0">
+                    Get Financing
                 </a>
             </div>
         </div>
@@ -174,6 +204,35 @@
                     <p class="text-5xl font-extrabold text-green-500 mb-2">24/7</p>
                     <h3 class="text-xl font-semibold text-gray-800 mb-2">Support & Transfers</h3>
                     <p class="text-gray-600">Reliable Cooperate Hire, Events, and Airport Transfer services available around the clock.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Quick Services (shows before inventory to reduce perceived load) -->
+    <section id="services" class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800 reveal">Our Services</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+                <div class="bg-white p-4 rounded-lg shadow reveal">
+                    <h3 class="font-semibold">Car Sales</h3>
+                    <p class="text-sm text-gray-600">Wide selection of inspected vehicles.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow reveal">
+                    <h3 class="font-semibold">Financing</h3>
+                    <p class="text-sm text-gray-600">Flexible loan packages tailored for you.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow reveal">
+                    <h3 class="font-semibold">Premium Hire</h3>
+                    <p class="text-sm text-gray-600">Executive and event vehicle hire.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow reveal">
+                    <h3 class="font-semibold">Airport Transfers</h3>
+                    <p class="text-sm text-gray-600">Reliable pickups to/from Jomo Kenyatta.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow reveal">
+                    <h3 class="font-semibold">Spare Parts</h3>
+                    <p class="text-sm text-gray-600">Authentic parts sourced and imported.</p>
                 </div>
             </div>
         </div>
@@ -290,16 +349,51 @@
             'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80'
         ];
 
-        // Generate 30 car objects
+        // LQIP: set hero image with a blurred low-res placeholder, then swap to high-res
+        function buildLowRes(url){
+            try{
+                // replace or append width and quality params for a tiny blurred version
+                let low = url;
+                if(/w=\d+/.test(low)) low = low.replace(/w=\d+/, 'w=60'); else low += '&w=60';
+                if(/q=\d+/.test(low)) low = low.replace(/q=\d+/, 'q=10'); else low += '&q=10';
+                if(!/blur=\d+/.test(low)) low += '&blur=50';
+                return low;
+            }catch(e){ return url; }
+        }
+
+        function setHeroImageWithLQIP(highUrl){
+            const heroImg = document.getElementById('hero-img');
+            if(!heroImg) return;
+            const low = buildLowRes(highUrl);
+            heroImg.classList.add('blur-up');
+            heroImg.loading = 'eager';
+            heroImg.decoding = 'async';
+            heroImg.src = low; // immediate tiny blurred image
+
+            // hint browser to preload the high-res image
+            const link = document.createElement('link');
+            link.rel = 'preload'; link.as = 'image'; link.href = highUrl;
+            document.head.appendChild(link);
+
+            const img = new Image();
+            img.src = highUrl;
+            img.onload = () => {
+                heroImg.src = highUrl;
+                heroImg.classList.add('loaded');
+                heroImg.classList.remove('blur-up');
+            };
+        }
+
+        // Generate 15 car objects (reduced from 30 for lighter initial load)
         const locations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Thika'];
-        const carData = Array.from({length:30}).map((_, i) => {
+        const carData = Array.from({length:15}).map((_, i) => {
             const makes = ['Toyota', 'Nissan', 'Mercedes', 'BMW', 'Mazda', 'Subaru', 'Hyundai', 'Kia', 'Ford', 'Honda'];
             const models = ['Sedan','SUV','Hatchback','Coupe','Roadster','Pickup','Van','Wagon'];
             const make = makes[i % makes.length];
             const model = models[i % models.length];
             const year = 2005 + (i % 19);
             const price = (Math.floor(Math.random()*8)+1) + '00K';
-            const image = carImages[i % carImages.length];
+            const image = carImages[i % carImages.length] + '&auto=compress&cs=tinysrgb';
             const location = locations[i % locations.length];
             const name = `${make} ${model} (${year})`;
             const slug = `/inventory/${make.toLowerCase()}-${model.toLowerCase()}-${i}`;
@@ -312,7 +406,7 @@
             const grid = document.getElementById('inventory-grid');
             grid.innerHTML = carData.map((car, idx) => `
                 <div class="card-gradient rounded-xl shadow-xl overflow-hidden reveal delay-${(idx%5+1)*100}">
-                    <img src="${car.image}" alt="${car.name}" class="w-full h-48 object-cover">
+                    <img src="${car.image}" alt="${car.name}" class="w-full h-48 object-cover" loading="lazy" decoding="async">
                     <div class="p-6">
                         <h3 class="text-2xl font-bold text-gray-900 mb-1">${car.name}</h3>
                         <p class="text-sm text-gray-500 mb-2">Location: <strong class="text-gray-700">${car.location}</strong></p>
@@ -333,11 +427,8 @@
                 </div>
             `).join('');
 
-            // After rendering, set hero background to the first car image
-            const hero = document.querySelector('.hero-bg');
-            if (hero && carData.length) {
-                hero.style.backgroundImage = `url('${carData[0].image}')`; 
-            }
+            // After rendering, set hero image to the first car image (if present)
+            if (carData.length) setHeroImageWithLQIP(carData[0].image);
         }
 
         // Share helpers
@@ -422,21 +513,32 @@
                 });
             }, observerOptions);
 
-            document.querySelectorAll('#inventory-grid .reveal').forEach(el => {
-                const delayClass = Array.from(el.classList).find(cls => cls.startsWith('delay-'));
-                if (delayClass) {
-                    const delayMs = parseInt(delayClass.replace('delay-', '')) * 10;
-                    el.style.transitionDelay = `${delayMs}ms`;
-                }
-                observer.observe(el);
-            });
+                // Observe all reveal elements across the page (hero, services, inventory)
+                document.querySelectorAll('.reveal').forEach(el => {
+                    const delayClass = Array.from(el.classList).find(cls => cls.startsWith('delay-'));
+                    if (delayClass) {
+                        const delayMs = parseInt(delayClass.replace('delay-', '')) * 10;
+                        el.style.transitionDelay = `${delayMs}ms`;
+                    }
+                    observer.observe(el);
+                });
         }
 
         // Init on DOM ready
         document.addEventListener('DOMContentLoaded', () => {
-            renderInventory();
-            attachShareHandlers();
+            // Initialize reveal observer immediately so hero and services reveal correctly
             initRevealObserver();
+            attachShareHandlers();
+            // Show a quick LQIP hero using the first known car image to ensure hero appears fast
+            if(window.carImages && carImages.length) setHeroImageWithLQIP(carImages[0]);
+            // Defer inventory rendering slightly to improve perceived load
+            window.setTimeout(() => {
+                renderInventory();
+                // re-run observer on newly added items (they have .reveal)
+                initRevealObserver();
+                // ensure hero is updated to the actual first car (if different)
+                if (carData.length) setHeroImageWithLQIP(carData[0].image);
+            }, 600);
         });
     </script>
 </body>
